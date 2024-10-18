@@ -11,6 +11,24 @@ csl: "harvard-cite-them-right.csl"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+```{r, echo=FALSE}
+# Import and data from the tab-separated data file which is held in the data sub-folder
+#file_path <- file.path(getwd(),'/Data/Energy_September_2024_Final.txt')
+file_path <- './Data/Energy_September_2024_Final.txt'
+energy_df <- read.delim((file_path))
+
+# Convert the string date to a valid date format, add it to the dataframe and remove the old one
+#valid_dates <- as.Date(energy_df$Date, '%d/%m/%Y')
+#energy_df = data.frame(valid_dates, energy_df)
+#energy_df$Date <- NULL
+#colnames(energy_df)[colnames(energy_df) == 'valid_dates'] <- 'Date'
+
+# Convert the string date to a valid date format
+energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
+
 ```
 
 # Introduction
@@ -20,8 +38,6 @@ knitr::opts_chunk$set(echo = TRUE)
 -   Origin
 -   Why is it important to me
 -   Show first 5 or 6 lines of data to help understanding
-
-
 
 ## Scope of The Data
 
@@ -40,27 +56,59 @@ The data comprises three main parts:
 
 ### Weather
 
-Weather data is sourced from a local weather station, see <https://www.blscc.org/weather>. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance is a measure of the solar energy experienced over a specified area, it is measure in W/m$^2$; typically this is used to actually caluclate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
+Weather data is sourced from a local weather station, see <https://www.blscc.org/weather>. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance is a measure of the solar energy experienced over a specified area, it is measure in W/m$^2$; typically this is used to actually calculate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
+
+*ACTION: Recalculate the irradiance figues to give a better average approximation for the day .. but continue analysis approach meanwhile*
 
 ### Power Generation & Use
 
 Power data is downloaded from an iPhone App that controls the distribution of power to the domestic house being analysed, see Figure 1. This is a Tesla Powerwall and controller that takes electricity from: i) an array of 36 solar panels; ii) battery storage; iii) the national power grid and then intelligently routes this for: i) consumption by the house; ii) battery storage; iii) export to the nationla power grid. Electricty is measured here in kWh.
 
-It should be noted that there are some lmitations in the data that could be obtained. Onlu solar generation and house consumption was used and energy flow to and from the battery was not readily available.
+It should be noted that there are some limitations in the data that could be obtained. Only solar generation and house consumption was used and energy flow both to and from the battery was not readily available.
 
 ![Tesla Powerwall App](TeslaPowerwallApp.jpeg){width="25%"}
 
 ### Data Analysed
 
-Once the three sources of data have been collated the dataset for analysis consists of the below:
-```{r}
-# Import and display data from the tab-seperated data file
+*ACTION: Tidy up table columns display*
 
+Once the three sources of data have been collated the dataset for analysis consists of the below:
+```{r, echo=FALSE}
+# Display the first 6 rows of the data
+kable(head(energy_df), caption = 'Data Elements')
+```
+
+
+The dataset consists of:
+
+-   30 observations, for each day in September 2024
+-   Home: The total electricity, kWh, used by the home all day
+-   From\_ Solar, Grid, Battery: The total electricity provided by the solar panels, power grid and battery respectively. All kWh.
+-   To\_ Grid, Battery: The total electricity exported to the power grid or stored by battery. All kWh.
+
+```{r}
+plot(energy_df$Home~energy_df$Date, type = 'l', col = 'red')
+lines(energy_df$Date, energy_df$Temp_Avg, type = 'l', col = "blue")
+lines(energy_df$Date, energy_df$Occupied*20, type = 'h', col = "green")
+legend("topright", legend = c("Home", "Temp", "Occupied"), 
+       col = c("red", "blue", "green"), lty = 1)
+
+
+plot(energy_df$Date, energy_df$From_Solar, type = 'l', col = "red")
+lines(energy_df$Date, energy_df$Irradiance/150, type = 'l', col = "blue")
+legend("topright", legend = c("Solar", "Irradiance", "xx"), 
+       col = c("red", "blue", "green"), lty = 1)
 ```
 
 
 
+```{r}
+
+```
+
 # Methods and Results
+
+
 
 (40 marks)
 
@@ -74,6 +122,4 @@ Test citations [@Crawley2014] and as @Fraix-Burnet2016
 
 ## References
 
-
 ?? Bother to quote a link to Wikipedia? [See Wikipedia](https://en.wikipedia.org/wiki/Solar_irradiance#:~:text=Solar%20irradiance%20is%20the%20power,m2%20in%20SI%20units.)
-
