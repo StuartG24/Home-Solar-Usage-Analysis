@@ -1,0 +1,25 @@
+---
+title: "Energy Usage Analysis"
+author: "Stuart Gow"
+date: "18 October 2024"
+output:
+  pdf_document: default
+  html_document: default
+bibliography: references.bib
+csl: "harvard-cite-them-right.csl"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Test citations [@Crawley2014] and as  @Fraix-Burnet2016
+
+
+Notes:
+
+output: pdf_document: default html_document: default
+
+link-citations: yes linkcolor: blue bibliography: notes_refs.bib biblio-style: apalike
+
+## References
