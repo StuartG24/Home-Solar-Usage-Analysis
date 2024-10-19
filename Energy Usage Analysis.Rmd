@@ -1,12 +1,15 @@
 ---
 title: "Energy Usage Analysis"
+subtitle: "An Analysis of Solar Generation Effectiveness"
 author: "Stuart Gow"
-date: "18 October 2024"
+date: "19 October 2024"
 output:
   pdf_document: default
   html_document: default
+links-as-notes: true
 bibliography: references.bib
 csl: "harvard-cite-them-right.csl"
+link-citations: true
 ---
 
 ```{r setup, include=FALSE}
@@ -41,7 +44,7 @@ energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
 
 ## Scope of The Data
 
-This analysis looks at the generation and domestic use of solar engergy during September 2024 in the southern highlands of Scotland. The objectives of this analysis are to see how well solar generation covers the demands of a domestic residence at the tail end of the summer and to determine if additional solar generation and battery storage is needed. Being able to ensure solar generated power covers all household needs is important as this reduces the financial cost of having to import electricity from the national power grid.
+This analysis looks at the generation and domestic use of solar energy during September 2024 in the southern highlands of Scotland. The objectives of this analysis are to see how well solar generation covers the demands of a domestic residence at the tail end of the summer and to determine if additional solar generation and battery storage is needed. Being able to ensure solar generated power covers all household needs is important as this reduces the financial cost of having to import electricity from the national power grid. It is also a small contribution to the reduction of non-green energy energy generation.
 
 -   ?? Solar linked to sunshine/irradiance?
 -   ?? How well does solar generation cover house consumption? How much is the grid still used?
@@ -50,19 +53,26 @@ This analysis looks at the generation and domestic use of solar engergy during S
 
 The data comprises three main parts:
 
--   Weather: Daily temperature and solar irradiance readings (see note below)
+-   Weather: Daily temperature and solar irradiance readings
 -   Power Generation & Use: Daily solar energy generated and consumed
 -   House Occupation: A simple flag to indicate if the house is occupied or not
 
+All data and also supporting files can be found online at [Github](https://github.com/StuartG24/Home-Solar-Usage-Analysis)
+
+
 ### Weather
 
-Weather data is sourced from a local weather station, see <https://www.blscc.org/weather>. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance is a measure of the solar energy experienced over a specified area, it is measure in W/m$^2$; typically this is used to actually calculate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
+Weather data is sourced from a local weather station[^2]. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance[^3] is a measure of the solar energy experienced over a specified area and is measure in W/m$^2$; typically this is used to actually calculate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
+
+[^2]: Balqhuidder Village Hall: <https://www.blscc.org/weather>
+
+[^3]: Wikipedia: [https://en.wikipedia.org/wiki/Solar_irradiance](https://en.wikipedia.org/wiki/Solar_irradiance#){.uri}
 
 *ACTION: Recalculate the irradiance figues to give a better average approximation for the day .. but continue analysis approach meanwhile*
 
 ### Power Generation & Use
 
-Power data is downloaded from an iPhone App that controls the distribution of power to the domestic house being analysed, see Figure 1. This is a Tesla Powerwall and controller that takes electricity from: i) an array of 36 solar panels; ii) battery storage; iii) the national power grid and then intelligently routes this for: i) consumption by the house; ii) battery storage; iii) export to the nationla power grid. Electricty is measured here in kWh.
+Power data is downloaded from an iPhone App that controls the distribution of power to the domestic house being analysed, see Figure 1. This is a Tesla Powerwall and controller that takes electricity from: i) an array of 36 solar panels; ii) battery storage; iii) the national power grid and then intelligently routes this for: i) consumption by the house; ii) battery storage; iii) export to the national power grid. Electricity is measured here in kWh.
 
 It should be noted that there are some limitations in the data that could be obtained. Only solar generation and house consumption was used and energy flow both to and from the battery was not readily available.
 
@@ -70,14 +80,14 @@ It should be noted that there are some limitations in the data that could be obt
 
 ### Data Analysed
 
-*ACTION: Tidy up table columns display*
+*ACTION: Tidy up table columns display .... look at Pandoc options etc to change layout for table and whole document? https://pandoc.org/MANUAL.html#synopsis*
 
 Once the three sources of data have been collated the dataset for analysis consists of the below:
-```{r, echo=FALSE}
-# Display the first 6 rows of the data
-kable(head(energy_df), caption = 'Data Elements')
-```
 
+```{r echo=FALSE}
+# Display the first 6 rows of the data
+kable(head(energy_df), caption = 'First 6 Rows of the source dataset')
+```
 
 The dataset consists of:
 
@@ -86,40 +96,38 @@ The dataset consists of:
 -   From\_ Solar, Grid, Battery: The total electricity provided by the solar panels, power grid and battery respectively. All kWh.
 -   To\_ Grid, Battery: The total electricity exported to the power grid or stored by battery. All kWh.
 
-```{r}
+The following plots etc etc
+
+```{r, echo=FALSE,fig.cap="First plot", out.width="90%"}
 plot(energy_df$Home~energy_df$Date, type = 'l', col = 'red')
 lines(energy_df$Date, energy_df$Temp_Avg, type = 'l', col = "blue")
 lines(energy_df$Date, energy_df$Occupied*20, type = 'h', col = "green")
 legend("topright", legend = c("Home", "Temp", "Occupied"), 
        col = c("red", "blue", "green"), lty = 1)
-
-
+```
+```{r, echo=FALSE, fig.cap="Second plot", out.width="90%"}
 plot(energy_df$Date, energy_df$From_Solar, type = 'l', col = "red")
 lines(energy_df$Date, energy_df$Irradiance/150, type = 'l', col = "blue")
 legend("topright", legend = c("Solar", "Irradiance", "xx"), 
        col = c("red", "blue", "green"), lty = 1)
 ```
-
-
-
-```{r}
-
-```
+\newpage
 
 # Methods and Results
 
-
-
 (40 marks)
+
+[Test link](https://bookdown.org/yihui/rmarkdown-cookbook/latex-variables.html)
+
 
 # Conclusions
 
 (20 marks)
 
-xxxxxxxx
-
 Test citations [@Crawley2014] and as @Fraix-Burnet2016
 
-## References
+@spiegel2012
 
-?? Bother to quote a link to Wikipedia? [See Wikipedia](https://en.wikipedia.org/wiki/Solar_irradiance#:~:text=Solar%20irradiance%20is%20the%20power,m2%20in%20SI%20units.)
+\newpage
+
+# References
