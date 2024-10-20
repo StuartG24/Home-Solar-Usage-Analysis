@@ -2,11 +2,19 @@
 title: "Energy Usage Analysis"
 subtitle: "An Analysis of Solar Generation Effectiveness"
 author: "Stuart Gow"
-date: "19 October 2024"
+date: "20 October 2024"
 output:
   pdf_document: default
   html_document: default
 links-as-notes: true
+header-includes:
+  \usepackage{lastpage}
+  \usepackage{fancyhdr}
+  \pagestyle{fancy}
+  \fancyhead[L]{Energy Usage Analysis}
+  \fancyhead[C]{}
+  \fancyhead[R]{\thepage\ of \pageref{LastPage}}
+  \fancyfoot[C]{}
 bibliography: references.bib
 csl: "harvard-cite-them-right.csl"
 link-citations: true
@@ -59,16 +67,15 @@ The data comprises three main parts:
 
 All data and also supporting files can be found online at [Github](https://github.com/StuartG24/Home-Solar-Usage-Analysis)
 
-
 ### Weather
 
-Weather data is sourced from a local weather station[^2]. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance[^3] is a measure of the solar energy experienced over a specified area and is measure in W/m$^2$; typically this is used to actually calculate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
+Weather data is sourced from a local weather station[^1]. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance[^2] is a measure of the solar energy experienced over a specified area and is measure in W/m$^2$; typically this is used to actually calculate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
 
-[^2]: Balqhuidder Village Hall: <https://www.blscc.org/weather>
+[^1]: Balqhuidder Village Hall: <https://www.blscc.org/weather>
 
-[^3]: Wikipedia: [https://en.wikipedia.org/wiki/Solar_irradiance](https://en.wikipedia.org/wiki/Solar_irradiance#){.uri}
+[^2]: Wikipedia: [https://en.wikipedia.org/wiki/Solar_irradiance](https://en.wikipedia.org/wiki/Solar_irradiance#){.uri}
 
-*ACTION: Recalculate the irradiance figues to give a better average approximation for the day .. but continue analysis approach meanwhile*
+*TO DO: Recalculate the irradiance figues to give a better average approximation for the day .. but continue analysis approach meanwhile*
 
 ### Power Generation & Use
 
@@ -80,7 +87,7 @@ It should be noted that there are some limitations in the data that could be obt
 
 ### Data Analysed
 
-*ACTION: Tidy up table columns display .... look at Pandoc options etc to change layout for table and whole document? https://pandoc.org/MANUAL.html#synopsis*
+*TO DO: Tidy up table columns display .... look at Pandoc options etc to change layout for table and whole document? <https://pandoc.org/MANUAL.html#synopsis>*
 
 Once the three sources of data have been collated the dataset for analysis consists of the below:
 
@@ -105,24 +112,37 @@ lines(energy_df$Date, energy_df$Occupied*20, type = 'h', col = "green")
 legend("topright", legend = c("Home", "Temp", "Occupied"), 
        col = c("red", "blue", "green"), lty = 1)
 ```
+
 ```{r, echo=FALSE, fig.cap="Second plot", out.width="90%"}
 plot(energy_df$Date, energy_df$From_Solar, type = 'l', col = "red")
 lines(energy_df$Date, energy_df$Irradiance/150, type = 'l', col = "blue")
 legend("topright", legend = c("Solar", "Irradiance", "xx"), 
        col = c("red", "blue", "green"), lty = 1)
 ```
+
 \newpage
 
 # Methods and Results
 
 (40 marks)
 
-[Test link](https://bookdown.org/yihui/rmarkdown-cookbook/latex-variables.html)
+## Method
 
+*TO DO: Should data introduction and visualisation be here instead?*
+
+## Results
+
+*TO DO: Have a look back at the Bran Lab report for Spring 2018, for how to present means, SD etc etc*
 
 # Conclusions
 
 (20 marks)
+
+##?? Discussion
+
+*TO DO: Structure into two sections*
+
+##?? Conclusion
 
 Test citations [@Crawley2014] and as @Fraix-Burnet2016
 
