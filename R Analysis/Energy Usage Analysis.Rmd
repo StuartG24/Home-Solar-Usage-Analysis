@@ -1,8 +1,8 @@
 ---
 title: "Energy Usage Analysis"
 subtitle: "An Analysis of Solar Generation Effectiveness"
-author: "Stuart Gow"
-date: "20 October 2024"
+author: "Student Number: 2710017"
+date: "9 November 2024"
 output:
   pdf_document: default
   html_document: default
@@ -25,8 +25,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
-```{r, echo=FALSE}
-# Import and data from the tab-separated data file which is held in the data sub-folder
+```{r, include=FALSE}
+# Import all data from the tab-separated data file which is held in the data sub-folder
+
 #file_path <- file.path(getwd(),'/Data/Energy_September_2024_Final.txt')
 file_path <- './Data/Energy_September_2024_Final.txt'
 energy_df <- read.delim((file_path))
@@ -42,7 +43,7 @@ energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
 
 ```
 
-# Introduction
+# Introduction (20 marks)
 
 (20 Marks)
 
@@ -50,38 +51,65 @@ energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
 -   Why is it important to me
 -   Show first 5 or 6 lines of data to help understanding
 
-## Scope of The Data
+## Objectives
 
-This analysis looks at the generation and domestic use of solar energy during September 2024 in the southern highlands of Scotland. The objectives of this analysis are to see how well solar generation covers the demands of a domestic residence at the tail end of the summer and to determine if additional solar generation and battery storage is needed. Being able to ensure solar generated power covers all household needs is important as this reduces the financial cost of having to import electricity from the national power grid. It is also a small contribution to the reduction of non-green energy energy generation.
+This report looks at the use of solar energy during September 2024 in a domestic property in the southern highlands of Scotland. The property previously used oil for heating and electricity for lighting and cooking but this was changed in order to reduce running costs and the carbon-footprint of the property. A solar array, battery and ground source heat pump were installed to totally remove the need for oil and rely on solar generated electricity with import from the grid to add as needed.
 
--   ?? Solar linked to sunshine/irradiance?
--   ?? How well does solar generation cover house consumption? How much is the grid still used?
--   ?? How much is house consumption impacted by absence?
--   ?? What impact does temperature have? On house consumption? On solar generation?
+The main aims of the data analysis are to answer the following questions:
 
-The data comprises three main parts:
+1.  How effectively does the solar generation cover energy consumption?
+2.  When does the solar generation fall short and require grid import?
+3.  Would additional battery storage capacity cover shortfalls?
+4.  Does the installation meet the expectations at the time of purchase?
+
+***WIP - Analysis, expected conclusions:***
+
+1)  Consumption is covered by solar .. or not? how much? how much grid still needed
+2)  Consumption is linked to temperature and house occupancy
+3)  Solar generation is linked to irradiance .. but how much?
+4)  Any other links such as temperature? .. probably not usage or occupancy though?
+5)  ?? Cannot account for £ cost and different costs at times of day .. battery importing then for example
+6)  ?? Battery timing in and out complicates the analysis?
+7)  Increased battery will smooth out across days? forecast storage/impact .. but can't see the intra-day detail to better analyse
+8)  Solar generation meets the forecasts at purchase .. need original data/estimates!?
+
+## Summary of The Data
+
+The data comprises four main parts:
 
 -   Weather: Daily temperature and solar irradiance readings
--   Power Generation & Use: Daily solar energy generated and consumed
+-   Energy Use: Daily data for electricity consumption
+-   Energy Source: Daily data for the source of electricity: solar, battery or import from the grid
 -   House Occupation: A simple flag to indicate if the house is occupied or not
 
-All data and also supporting files can be found online at [Github](https://github.com/StuartG24/Home-Solar-Usage-Analysis)
+All data and supporting files can be found online at [Github](https://github.com/StuartG24/Home-Solar-Usage-Analysis)
 
 ### Weather
 
-Weather data is sourced from a local weather station[^1]. Temperature is the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period. Solar irradiance[^2] is a measure of the solar energy experienced over a specified area and is measure in W/m$^2$; typically this is used to actually calculate the power generated from an array of solar panels, but here it is used here as a proxy for daily sunshine hours because this data was not available.
+Weather data is sourced from [Balquhidder Weather Station](https://www.blscc.org/weather) and consists of:
 
-[^1]: Balqhuidder Village Hall: <https://www.blscc.org/weather>
+-   Temp_Avg - the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period.
+-   Irradiance - a measure of the solar energy experienced over a specified area and is measure in W/m$^2$ [^1]. Typically this is used to actually calculate the power generated from an array of solar panels, [*but here it is used here as a proxy for daily sunshine hours because this data was not available.*]{.underline}
 
-[^2]: Wikipedia: [https://en.wikipedia.org/wiki/Solar_irradiance](https://en.wikipedia.org/wiki/Solar_irradiance#){.uri}
+[^1]: Wikipedia: <https://en.wikipedia.org/wiki/Solar_irradiance>
 
-*TO DO: Recalculate the irradiance figues to give a better average approximation for the day .. but continue analysis approach meanwhile*
+***TO DO: Recalculate the irradiance figues to give a better average approximation for the day .. but continue analysis approach meanwhile***
 
-### Power Generation & Use
+### Energy Use & Source
 
-Power data is downloaded from an iPhone App that controls the distribution of power to the domestic house being analysed, see Figure 1. This is a Tesla Powerwall and controller that takes electricity from: i) an array of 36 solar panels; ii) battery storage; iii) the national power grid and then intelligently routes this for: i) consumption by the house; ii) battery storage; iii) export to the national power grid. Electricity is measured here in kWh.
+The distribution of power for the house is managed by a Tesla Powerwall and Controller and an iPhone app is used to monitor this, see Figure 1. All electricity data was downloaded from this app. Electricity is measured in kWh.
 
-It should be noted that there are some limitations in the data that could be obtained. Only solar generation and house consumption was used and energy flow both to and from the battery was not readily available.
+Electricity is sourced from:
+
+-   From_Solar - solar power from an array of 36 solar panels
+-   From_Battery - battery storage
+-   From_Grid - the national power grid
+
+The controller then intelligently routes electricity to:
+
+-   Home - consumption by the house
+-   To_Battery - battery storage
+-   To_Grid - export to the national power grid.
 
 ![Tesla Powerwall App](TeslaPowerwallApp.jpeg){width="25%"}
 
