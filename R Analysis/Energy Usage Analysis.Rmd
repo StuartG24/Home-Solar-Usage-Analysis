@@ -32,12 +32,6 @@ library(knitr)
 file_path <- './Data/Energy_September_2024_Final.txt'
 energy_df <- read.delim((file_path))
 
-# Convert the string date to a valid date format, add it to the dataframe and remove the old one
-#valid_dates <- as.Date(energy_df$Date, '%d/%m/%Y')
-#energy_df = data.frame(valid_dates, energy_df)
-#energy_df$Date <- NULL
-#colnames(energy_df)[colnames(energy_df) == 'valid_dates'] <- 'Date'
-
 # Convert the string date to a valid date format
 energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
 
@@ -53,13 +47,13 @@ energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
 
 ## Objectives
 
-This report looks at the use of solar energy during September 2024 in a domestic property in the southern highlands of Scotland. The property previously used oil for heating and electricity for lighting and cooking but this was changed in order to reduce running costs and the carbon-footprint of the property. A solar array, battery and ground source heat pump were installed to totally remove the need for oil and rely on solar generated electricity with import from the grid to add as needed.
+This report looks at the use of solar energy during September 2024 in a domestic property in the southern highlands of Scotland. The property previously used oil for heating and electricity for lighting and cooking but this was changed in order to reduce running costs and the carbon-footprint of the property. A solar array, battery and ground source heat pump were installed to remove the need for oil and to rely on solar generated electricity with import from the grid only when necessary to compensate for short-falls.
 
-The main aims of the data analysis are to answer the following questions:
+The main aims of the data analysis is to answer the following questions:
 
 1.  How effectively does the solar generation cover energy consumption?
-2.  When does the solar generation fall short and require grid import?
-3.  Would additional battery storage capacity cover shortfalls?
+2.  When specifically does the solar generation fall short and require grid import?
+3.  Would additional battery storage capacity cover these shortfalls?
 4.  Does the installation meet the expectations at the time of purchase?
 
 ***WIP - Analysis, expected conclusions:***
@@ -75,12 +69,12 @@ The main aims of the data analysis are to answer the following questions:
 
 ## Summary of The Data
 
-The data comprises four main parts:
+The data analysed comprises four parts, all daily data:
 
--   Weather: Daily temperature and solar irradiance readings
--   Energy Use: Daily data for electricity consumption
--   Energy Source: Daily data for the source of electricity: solar, battery or import from the grid
--   House Occupation: A simple flag to indicate if the house is occupied or not
+-   Weather: Temperature and solar irradiance readings
+-   Energy Use: Electricity consumption
+-   Energy Source: The source of electricity: solar, battery or import from the grid
+-   House Occupation: A Y/N flag to indicate if the house is occupied or not
 
 All data and supporting files can be found online at [Github](https://github.com/StuartG24/Home-Solar-Usage-Analysis)
 
@@ -88,7 +82,7 @@ All data and supporting files can be found online at [Github](https://github.com
 
 Weather data is sourced from [Balquhidder Weather Station](https://www.blscc.org/weather) and consists of:
 
--   Temp_Avg - the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals during a 24 hour period.
+-   Temp_Avg - the mean daily temperature in $^\circ$C and is derived from 6 readings taken at 4 hourly intervals over a 24 hour period.
 -   Irradiance - a measure of the solar energy experienced over a specified area and is measure in W/m$^2$ [^1]. Typically this is used to actually calculate the power generated from an array of solar panels, [*but here it is used here as a proxy for daily sunshine hours because this data was not available.*]{.underline}
 
 [^1]: Wikipedia: <https://en.wikipedia.org/wiki/Solar_irradiance>
