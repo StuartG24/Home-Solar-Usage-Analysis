@@ -153,9 +153,6 @@ legend("top", legend=c("From_Solar", "From_Pwall", "From_Grid"), title="Sources"
        fill = 3:1, cex = 0.6)
 ```
 
-
-
-
 ```{r, out.width="90%", echo=FALSE}
 # Convert to matrix for stacked bar plot
 generation <- t(energy_df)[c("To_Home", "To_Pwall", "To_Grid"), ]
@@ -166,12 +163,10 @@ barplot(generation, names.arg = format(energy_df$Date, "%d %b"),
 legend("top", legend=c("To-Home", "To_Pwall", "To_Grid"), title="Targets", 
        fill = 3:1, cex = 0.6)
 ```
+
 ```{r, fig.cap="Solar Generation & Its Target", out.width="90%"}
 
 ```
-
-
-
 
 ```{r, fig.cap="First plot", out.width="90%"}
 plot(energy_df$To_Home ~ energy_df$Date, type = 'l', col = 'red')
