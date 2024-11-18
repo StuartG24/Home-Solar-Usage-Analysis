@@ -44,6 +44,10 @@ energy_df$Date <- as.Date(energy_df$Date, '%d/%m/%Y')
 
 ## Objectives
 
+About six years ago, I decided to remove my reliance on oil and attempt to reduce my use of electricity imported from the National Grid. This was to try to reduce my energy costs and also as part of my small contribution towards reducing the use of fossil fuels. So I obtained installation costs and received estimates on how much energy I could generate by using solar panels. The existing setup of oil powered central heating was replaced by an installation of a solar panel array, battery storage and ground source heat pump. The aim was to be able to export surplus electricity and only import when generation and storage failed to meet the demands of the house.
+
+
+
 This report looks at the use of solar energy during September 2024 in a domestic property in the southern highlands of Scotland. The property previously used oil for heating and electricity for lighting plus cooking but this was changed in order to reduce running costs and the carbon-footprint of the property. A solar array, battery and ground source heat pump were installed in order to attempt to rely solely on solar generated electricity and supplemented with import from the electricity grid only to compensate for short-falls.
 
 The main aims of this data analysis is to answer the following questions:
