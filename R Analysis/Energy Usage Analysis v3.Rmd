@@ -300,7 +300,7 @@ lines(barplot_result, solar_predicted, type = 'h', col = "orange", lwd = 2)
 legend('top', legend=c("Actual Observed", "Predicted"),
        fill=c("blue", "orange"), cex = 0.6)
 
-
+# !! also show a scatter plot of the two
 ```
 
 The null hypothesis is that the installation performs as well as the sales promises; specifically that the average daily energy production in September $\mu_{act}$ is the same as that promised, expected $\mu_{exp}$. $$H_0:\mu_{act} = \mu_{exp}$$ the alternative hypothesis is that the installation does not perform as promised $$H_1:\mu_{act} < \mu_{exp}$$
@@ -309,8 +309,18 @@ A T-Test was performed to evaluate $H_0$ and to calculate the p-value which is t
 
 ```{r}
 # Evaluate the T-Test
-t_test_result <- t.test(energy_df$Solar_Total/1000, solar_predicted, alternative = "less")
+# !! changed to a paired t-test as comparing the values for each day, before I was using just a t-test
+(t_test_result <- t.test(energy_df$Solar_Total/1000, solar_predicted, alternative = "less", paired = TRUE))
 #print(sprintf("p-value: %.4f", t_test_result$p.value))
+# !! changed to use the log value
+(t_test_result <- t.test(log10(energy_df$Solar_Total/1000), log10(solar_predicted), alternative = "less", paired = TRUE))
+
+# !! Also consider Yes/No PredictedHigher Yes/No. So use a binomial distribution and use dbinom with a different H0 to demonstrate a tiny p-value that reject the H0 and clearly shows the actual is less than the predicted
+# nb this is regardless of actual values but just is one higher than the other or not
+# not for assignment, but for me how can I drill down into the size of the difference, the reason for the difference?
+
+# table below shows 30 times that predicted is higher than the actual
+table(solar_predicted > energy_df$Solar_Total/1000)
 ```
 
 The p-value is `r ifelse(t_test_result$p.value< 0.005, "< 0.005", round(t_test_result$p.value, 3))` which is statistically significant and the null hypothesis can be rejected at the 5% level. From this we can infer that the installation is not generating solar energy as effectively as originally promised.
