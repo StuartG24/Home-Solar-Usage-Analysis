@@ -2,7 +2,7 @@
 title: "Energy Usage Analysis"
 subtitle: "An Analysis of Solar Generation Effectiveness"
 author: "Student Number: 2710017"
-date: "24 November 2024"
+date: "25 November 2024"
 output:
   pdf_document: default
   html_document: default
