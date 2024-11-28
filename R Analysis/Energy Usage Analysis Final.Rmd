@@ -2,7 +2,7 @@
 title: "Energy Usage Analysis"
 subtitle: "An Analysis of Solar Generation Effectiveness"
 author: "Student Number: 2710017"
-date: "25 November 2024"
+date: "28 November 2024"
 output:
   pdf_document: default
   html_document: default
@@ -34,7 +34,7 @@ About six years ago, I decided to remove my reliance on oil and to reduce my use
 
 The main objective of this anaysis is to see if the installation has met the predictions made during the sales process and to what extent I no longer have to rely on imported electricity, or, in other words, how effective the overall installation is. I used a sample of data for the month of September 2024 as a hopefully representative month (ie not the height of summer with peak solar generation and not winter with low solar generation and peak consumption).
 
-In the final report, R code and outputs have been shown to demonstrate working, however to reduce the size of the document this is suppressed if repeating previous workings. All coding details are included in the submitted .rmd file.
+In the final report, R code and outputs have been shown to demonstrate working, however to reduce the size of the document this is suppressed if repeating previous workings. All coding details are included in the submitted .rmd file. The main references sources used were: [@Crawley2014], [@Spiegel.Schiller2012] and [@Hankin2024].
 
 ## Summary of The Data
 
@@ -112,7 +112,7 @@ The data was analysed in three themes and each of these are described in the fol
 
 ## Energy Consumption
 
-*Sanity Check*
+*Sanity Check & Visualisation*
 
 The energy consumption (electricity in kWh) of the house was compared to the weather and to occupancy and the figure below summarises this (nb: temperature and occupancy have been scaled to only show the relative size and so no values are displayed). 
 
@@ -145,9 +145,9 @@ boxplot(energy_df$Home_Total/1000, main="Energy Consumption", xlab= "Electricity
          col = 'lightblue', ylim=c(0,30), horizontal = TRUE)
 ```
 
-*Relationships Between Demand and Other Factors*
+*Energy Demand Drivers*
 
-It was expected that the energy demand from the house would be related to the occupancy and the temperature, however visually there does not appear to be a strong link with temperature but potentially there is a link with occupancy. So three linear regressions were carried out to better identify any relationships.
+It was expected that the energy demand from the house would be related to the occupancy and the temperature, however visually there does not appear to be a strong link with temperature but potentially there is a link with occupancy. So three linear regressions were carried out to better identify any possible correlations.
 
 First looking at the relationship between energy consumption and occupancy.
 
@@ -166,7 +166,9 @@ plot(energy_df$Home_Total/1000 ~ energy_df$Occupied, main="Daily Energy Demand v
 abline(regression_model, col="darkblue")
 ```
 
-The scatter plot shows the calculated regression line as energy = `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* occupancy. This fit had a p-value of `r format(p_value, digits=3)` and adjusted R-squared of `r format(adj_r_squared, digits=2)`. For a linear regression the null hypothesis is that $\beta$ is zero, ie $H_0: \beta = 0$. Here the p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and occupancy are correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
+The scatter plot above is overlaid with the calculated linear regression line of: energy = `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* occupancy. This linear regression calculation is used to see how strong the relationship is between a predictor variable (occupancy) and a response variable (energy consumption). The null hypothesis is that there is no relationship (no correlation) between energy consumption and occupancy and that the slope ($\beta$) of the line is zero, or: $$H_0: \beta = 0$$
+
+The p-value calculated for the regression model is the probability, if $H_0$ is true, of the observation or a an observation more extreme. Here more extreme is $\beta$ greater than 0. The calculated p-value for the regression fit above was `r format(p_value, digits=3)` with an adjusted R-squared of `r format(adj_r_squared, digits=2)`. The p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and occupancy are correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
 
 Then looking at the relationship between energy demand and temperature (NB: same R Code so not printed to save space).
 
@@ -187,7 +189,7 @@ abline(regression_model, col="darkblue")
 #print(sprintf("p-value: %.4f, Adj R-Squared: %.3f", p_value, adj_r_squared))
 ```
 
-The regression line determined was energy = `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* temperature. This fit had a p-value of `r format(p_value, digits=2)` and adjusted R-squared of `r format(adj_r_squared, digits=2)`. Here the p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and temperature are inversely correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
+The scatter plot above is overlaid with the calculated linear regression line of: `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* temperature. In the same way as previously, the p-value was calculated to test a similar null hypothesis and determine if their is a correlation between energy consumption and temperature. This calculated p-value was `r format(p_value, digits=2)` with an adjusted R-squared of `r format(adj_r_squared, digits=2)`. Here the p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and temperature are inversely correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
 
 Then a multi-linear regression was performed looking at the relationship between energy demand and temperature plus occupancy (NB: A three dimensional scatter plot was not attempted).
 
@@ -211,7 +213,7 @@ The regression line determined was energy = `r round(alpha, digits=2)` ($\alpha$
 
 *Background*
 
-The amount of energy generated by solar panels is a function of their size and the level of sunshine received, measured by irradiance. There is also a loss factor that reflects several things, such as the efficiency of the solar panels and the invertor. Additionally, irradiance observations are taken from local weather stations which may not experience the same shading from the sun as that experienced at the site of the solar panels. $$ Power (kWh) = Area (m^2) * Irradiance (kWh/m^2) * LossFactor$$
+The amount of energy generated by solar panels is a function of their size and the level of sunshine received, measured by irradiance. There is also a loss factor that reflects several things, such as the efficiency of the solar panels and the invertor. Additionally, irradiance observations (and forecasts) use data from local weather stations which may not experience the same shading from the sun as that experienced at the site of the solar panels. $$ Power (kWh) = Area (m^2) * Irradiance (kWh/m^2) * LossFactor$$
 
 ```{r, echo=TRUE}
 # The installation assumptions
@@ -223,13 +225,13 @@ loss_factor <- solar_estimated_pa / solar_panels_max
 irradiance_assumed <- solar_panels_max / solar_panels_area
 ```
 
-At installation, the annual generation power for this solar array was calculated as `r format(solar_estimated_pa, digits=2, big.mark=",")` kWh pa using an area of `r solar_panels_area` $m^2$, irradiance `r irradiance_assumed` kWh/$m^2$ pa and a loss factor of `r loss_factor`. Using the September observations of irradiance and generated solar energy, the effectiveness of the installation can be compared to the estimates (sales promises) made originally. It is very likely that the sales estimates were optimistic.
+As part of the sales process, estimates were provided of the forecast annual generation power for the proposed solar array. The forecast figures were `r format(solar_estimated_pa, digits=2, big.mark=",")` kWh pa using an area of `r solar_panels_area` $m^2$, irradiance `r irradiance_assumed` kWh/$m^2$ pa and a loss factor of `r loss_factor`. Using the September observations of irradiance and actual generated solar energy, the effectiveness of the installation can be compared to these estimates (sales promises). It is very likely that the sales estimates were optimistic.
 
-*Link Between Energy Generation & Irradiance*
+*Sanity Check - Link Between Energy Generation & Irradiance*
 
-It is expected that solar generation is strongly linked to irradiance and this was checked using a scatter plot and linear regression.
+It is expected that solar generation is strongly related to irradiance and this was checked using a scatter plot and linear regression.
 
-```{r, fig.dim=c(6,4), fig.align='center', echo=TRUE}
+```{r, echo=TRUE}
 # For solar generation, how well is this predicted by irradiance?
 regression_model <- lm(energy_df$Solar_Total/1000 ~ energy_df$Irrdnce)
 regression_summary <- summary(regression_model)
@@ -246,11 +248,20 @@ adj_r_squared <- regression_summary$adj.r.squared
 #print(sprintf("p-value Irradiation: %.4f, Adj R-Squared: %.3f", p_value0, adj_r_squared))
 ```
 
-The scatter plot and linear regression confirmed the relationship, with a p-value `r ifelse(p_value1 < 0.005, "< 0.005", round(p_value1, 3))` and a high adjusted r-squared `r format(adj_r_squared, digits=2)`.
+The scatter plot and linear regression confirmed the relationship, with a p-value `r ifelse(p_value1 < 0.005, "< 0.005", round(p_value1, 3))` and with a high adjusted R-squared of `r format(adj_r_squared, digits=2)`. Although the scatter plot does show that with higher levels of irradiance there is an increase in size and spread of the residuals and this is confirmed in the additional plot below. (NB: the regression calculation was repeated using log values and the regression fit was slightly improved, but to aid interpretation non-log values are reported here). This may have an impact on further analysis.
 
+```{r}
+# Examine the residuals for the calculated regression fit
+residuals_points <- resid(regression_model)
+fitted_points <- fitted(regression_model)
+plot(fitted_points, residuals_points,
+     main="Residuals for The Calculated Regression Fit", xlab="Regression Fit (Electricity)", ylab="Residuals",
+     pch=21, bg="lightblue", ylim=c(-7,7))
+abline(0,0)
+```
 *Evaluate Effectiveness*
 
-```{r, include=FALSE}
+```{r, fig.dim=c(6,4), fig.align='center', include=FALSE}
 # Compare the actual solar energy against the predicted energy based on  irradiance
 solar_predicted <- energy_df$Irrdnce/1000 * solar_panels_area * loss_factor
 #summary(energy_df[,c("Solar_Total", "Irrdnce", "Temp")])
@@ -264,7 +275,7 @@ plot(energy_df$Irrdnce/1000 ~ energy_df$Date, type = "l", col = "red")
 plot(energy_df$Temp ~ energy_df$Date, type = "l", col = "green")
 ```
 
-Using the formulae above and with the irradiance observations during September, the sales prediction for daily solar energy were calculated and compared with the actual energy generated. The means for the month are  `r format(mean(solar_predicted), digits=3)` kWh and `r format(mean(energy_df$Solar_Total/1000), digits=3)` respectively. The daily totals are compared in the plot below.
+Using the formulae above and with the irradiance observations during September, the sales prediction for daily solar energy were calculated and compared with the actual energy generated. The means for the month are  `r format(mean(solar_predicted), digits=3)` kWh and `r format(mean(energy_df$Solar_Total/1000), digits=3)` respectively. The daily totals are shown in the plot below and this clearly shows that the predicted generation is higher than the actual, although the differences do vary.
 
 ```{r, fig.dim=c(8,5), fig.align='center', echo=FALSE}
 # Barplot of solar generation & solar predicted
@@ -276,32 +287,32 @@ legend('top', legend=c("Actual Observed", "Predicted"),
        fill=c("blue", "orange"), cex = 0.6)
 ```
 
-The figure clearly shows that the predicted generation is higher than the actual, although the differences do vary. Further analysis was completed to better understand this. A scatter plot below shows the relationship between the actual and predicted energy generation.
+Further analysis was completed to better understand this. A scatter plot below shows the relationship between actual and predicted energy generation.
 
-```{r, fig.dim=c(6,4), fig.align='center', echo=TRUE}
+```{r}
 # Scatter plot and regression for solar generation & solar predicted
 regression_model <- lm(energy_df$Solar_Total/1000 ~ solar_predicted)
 regression_summary <- summary(regression_model)
-
-plot(energy_df$Solar_Total/1000 ~ solar_predicted, 
-     main="Solar Energy Actual vs Predicted (kWh)", xlab="Predicted", ylab="Actual",
-     pch=21, bg="lightblue")
-abline(regression_model, col="darkblue")
 alpha <- regression_summary$coefficients["(Intercept)", "Estimate"]
 beta0 <- regression_summary$coefficients["solar_predicted", "Estimate"]
 p_value1 <- regression_summary$coefficients["solar_predicted", "Pr(>|t|)"]
 adj_r_squared <- regression_summary$adj.r.squared
 #print(sprintf("Alpha: %.3f, Beta Irradiation: %.3f", alpha, beta0))
 #print(sprintf("p-value Irradiation: %.4f, Adj R-Squared: %.3f", p_value0, adj_r_squared))
+
+plot(energy_df$Solar_Total/1000 ~ solar_predicted, 
+     main="Solar Energy Actual vs Predicted (kWh)", xlab="Predicted", ylab="Actual",
+     pch=21, bg="lightblue")
+abline(regression_model, col="darkblue")
 ```
 
-As expected the actual generated solar energy and predicted do appear to have a strong relationship, with a p-value `r ifelse(p_value1 < 0.005, "< 0.005", round(p_value1, 3))` and a high adjusted r-squared `r format(adj_r_squared, digits=2)`.
+As expected the actual generated solar energy and predicted do appear to have a strong relationship, with a p-value `r ifelse(p_value1 < 0.005, "< 0.005", round(p_value1, 3))` and a high adjusted r-squared `r format(adj_r_squared, digits=2)`. (NB: with a similar spread of residuals as generation increases with higher irrradiance).
 
 *Evaluate Effectiveness - T-Test*
 
-To try to better understand the relationship between the actual and predicted energy, a T-Test was completed. The null hypothesis is that the installation performs as well as the sales promises; specifically that the average daily energy production in September $\mu_{act}$ is the same as that promised (expected) $\mu_{exp}$. $$H_0:\mu_{act} = \mu_{exp}$$ the alternative hypothesis is that the installation does not perform as promised $$H_1:\mu_{act} < \mu_{exp}$$
+To try to better understand the relationship between the actual and predicted energy, a t-test was completed. The null hypothesis is that the installation performs as well as the sales promises; specifically that the average daily energy production in September $\mu_{act}$ is the same as that promised (expected) $\mu_{exp}$. $$H_0:\mu_{act} = \mu_{exp}$$ the alternative hypothesis is that the installation does not perform as promised $$H_1:\mu_{act} < \mu_{exp}$$
 
-A T-Test was performed to evaluate $H_0$ and to calculate the p-value which is the probability, if $H_0$ is true, of obtaining the observation, or an observation more extreme. In this case more extreme is that the actual mean observed is less than the expected mean because we suspect that the installation does not perform as well as the sales promises; so a one-tailed paired test was used. Log values were used to try to make both samples closer to a normal distribution.
+A t-test was performed to evaluate $H_0$ and to calculate the p-value which is the probability, if $H_0$ is true, of obtaining the observation, or an observation more extreme. In this case more extreme is that the actual mean observed is less than the expected mean because we suspect that the installation does not perform as well as the sales promises; so a one-tailed paired test was used. Log values were used to make both samples closer to a normal distribution.
 
 ```{r}
 # Evaluate the T-Test
@@ -309,7 +320,7 @@ A T-Test was performed to evaluate $H_0$ and to calculate the p-value which is t
 t_test_result <- t.test(log10(energy_df$Solar_Total/1000), log10(solar_predicted), alternative = "less", paired = TRUE)
 ```
 
-The p-value is `r ifelse(t_test_result$p.value< 0.005, "< 0.005", round(t_test_result$p.value, 3))` which is statistically significant and the null hypothesis can be rejected at the 5% level. From this we can infer that the installation is not generating solar energy as effectively as originally promised.
+The p-value is `r ifelse(t_test_result$p.value< 0.005, "< 0.005", round(t_test_result$p.value, 3))` which is statistically significant and the null hypothesis can be rejected at the 5% critical level. From this we can infer that the installation is not generating solar energy as effectively as originally promised.
 
 *Evaluate Effectiveness - Binomial Probability*
 
@@ -319,24 +330,19 @@ The p-value is `r ifelse(t_test_result$p.value< 0.005, "< 0.005", round(t_test_r
 nearPredicted <- energy_df$Solar_Total/1000 >= (0.75 * solar_predicted)
 observedSuccess <- sum(nearPredicted)
 p_value <- sum(dbinom(0:observedSuccess,30,0.5))
+
+lower <- qbinom(0.025,30,0.5)
+higher <- qbinom(0.975,30,0.5)
 ```
-The above analysis strongly supports the view that the sales promises have not been met, however it is not clear why this is. Inefficiencies in the solar panels and invertor have already been reflected in the prediction calculation loss factor. So sales optimism could be reflected in the use of ambitious irradiance estimates compared to what is experienced during September 2024. To attempt to quantify this the view was taken that it would be an acceptable target to achieve 75% of what was predicted (a definition of success). In September, this occurred on `r round(observedSuccess)` days out of 30. 
+The above analysis strongly supports the view that the sales promises have not been met, however it is not clear why this is. Inefficiencies in the solar panels and invertor have already been reflected in the prediction calculation loss factor, so possibly the sales optimism is in the use of ambitious irradiance estimates compared to what was actually experienced during September 2024. To explore this, a view was taken that it would be an acceptable target to achieve 75% of what was predicted (a definition of 'success'). In September, this occurred on `r round(observedSuccess)` days out of 30. 
 
-The null hypothesis to test the observations is that success is achieved on on as many days as not; $H_0: p(success) = 0.5$. Success or failure can be considered as a binomial distribution, $Bin(30,0.5)$ and the probability of achieving the observed successes then calculated. The p-value is the probability, if the null hypothesis is true, of the observation or a more extreme observation. Here the more extreme observation is less than 6 days of success. The calculated p-value is `r round(p_value, digits=3)` which is below the critical value of 5% and therefore we can reject the null hypothesis and infer that the predicted energy is not met even 75% of the time.
-
-```{r}
-# What is a 'success' level achievable 50% of the time
-amount <- qbinom(0.5,30,0.5)
-
-p_value <- sum(dbinom(0:2,30,0.5))
-print(p_value)
-```
+The null hypothesis to test the observations is that 'success' is achieved on on as many days as not; $H_0: p(success) = 0.5$. Success or failure can be considered as a binomial distribution, $Bin(30,0.5)$ and the probability of achieving the observed successes then calculated. The p-value is the probability, if the null hypothesis is true, of the observation or a more extreme observation. Here the more extreme observation is less than 6 days of 'success'. The calculated p-value is `r round(p_value, digits=3)` which is below the critical value of 5% and therefore we can reject the null hypothesis and infer that the predicted energy is not met even at 75% of the predicted energy amount. Looking at this in another way, for $H_0$ not to be rejected would require that 'success' is achieved on between `r round(lower)` to `r round(higher)` days per month; so the actual `r round(observedSuccess)` days is well outside this range.
 
 ## Solar Energy Sufficiency
 
 *Visual Examination*
 
-The energy demands of the house were examined to see how well solar generated electricity matched this demand and how much any shortfalls needed to covered by imported electricity. The first stacked bar plot below shows the daily total energy consumed and how much is provided by: solar generation; the battery; or imported electricity. The second plot shows the daily total solar energy generated and where this is distributed to.
+The energy demands of the house were examined to see how well these were met by solar generated electricity and how much any shortfalls needed to covered by imported electricity. The first stacked bar plot below shows the daily total energy consumed and how much is provided by: solar generation; the battery; or imported electricity. The second plot shows the daily total solar energy generated and where this is distributed to.
 
 ```{r, fig.dim=c(8,5), fig.align='center'}
 # Stacked bar plot of daily energy consumption and the three sources of energy
@@ -370,33 +376,44 @@ legend('top', legend=c("To Home", "To Battery", "To Grid"), title="Targets",
 ```{r}
 # Calculate how the energy is consumed and distributed
 average_solar_percent <- mean(c(energy_df$From_Solar / energy_df$Home_Total)) * 100
-#print(paste("Straight percentage:", average_solar_percent))
-
 solar_home_percent <- mean(c(energy_df$To_Home / energy_df$Solar_Total)) * 100
 solar_powerwall_percent <- mean(c(energy_df$To_Pwall / energy_df$Solar_Total)) * 100
 solar_grid_percent <- mean(c(energy_df$To_Grid / energy_df$Solar_Total)) * 100
-#print(paste("To Home:", solar_home_percent, "To Powerwall:", solar_powerwall_percent, "To Grid:", solar_grid_percent))
-# Calculate the approximate use of solar
-adjusted_solar_percent <- mean(c((energy_df$Home_Total - energy_df$From_Grid) / 
-                                    energy_df$Home_Total)) * 100
-# print(paste("Without Grid Imported:", adjusted_solar_percent))
 ```
 
-The first bar plot appears to clearly show that the generated solar energy is not sufficient to meet the total consumption needs, on average it only meets `r round(average_solar_percent, digits = 0)`% of the daily demand. However, this is misleading as generated solar energy is often first stored in the battery for later use (nb it is sometime also to exported to the gird if the battery becomes full). The second bar plot shows this more clearly, with solar energy distributed to the home, the battery or exported to the grid on average: `r round(solar_home_percent, digits = 0)`%, `r round(solar_powerwall_percent, digits = 0)`%, `r round(solar_grid_percent, digits = 0)`% respectively.
+The first bar plot appears to clearly show that the generated solar energy is not sufficient to meet the total consumption needs, on average it only meets `r round(average_solar_percent, digits = 0)`% of the daily demand. However, this is misleading as generated solar energy is often first stored in the battery for later use (it is sometime also exported to the gird if the battery becomes full). The second bar plot shows this more clearly, with solar energy distributed to the home, the battery or exported to the grid on average: `r round(solar_home_percent, digits = 0)`%, `r round(solar_powerwall_percent, digits = 0)`%, and `r round(solar_grid_percent, digits = 0)`% respectively.
 
-An alternative approximation of how well the solar generation meets the needs of the house's energy consumption is to look at how much usage is catered for without any import from the grid which suggests on average approximately `r round(adjusted_solar_percent, digits = 0)`% is ultimately provided by solar energy.
+*Successfully Meeting Demand - Binomial Probability*
+
+```{r}
+# Calculate an alternative approximation for solar generation
+approximation_solar <- energy_df$Home_Total - energy_df$From_Grid
+demand_met_percent <- (approximation_solar / energy_df$Home_Total) * 100
+meanD <- mean(demand_met_percent)
+sdD <- sd(demand_met_percent)
+```
+
+To take into account battery storage, an alternative approximation of how well the solar generation meets the needs of the house's energy consumption is to look at how much usage is catered for without any import from the grid. Using this approximation, the plot below shows the distribution of the percentage of demand that is met daily by solar generation in September. Across the month, on average, `r round(meanD, digits = 0)`%  of the demand is met and the range is from `r round(min(demand_met_percent), digits = 0)`% up to `r round(max(demand_met_percent), digits = 0)`%. 
+
+??? Also, there are `r round(sum(demand_met_percent < 75))` days when under 75% of the demand is met.
+
+```{r, fig.dim=c(8,4), fig.align='center', echo=FALSE}
+# The distribution of percentage demand met in September
+hist(demand_met_percent, main="Percentage Demand Met - Daily", xlab= "Percentage", ylab="Days Count - September", 
+         col = 'lightblue', xlim=c(50,100))
+p_value <- pnorm(90, mean = meanD, sd = sdD, lower.tail = FALSE)
+```
+A reasonable target for solar generation is to regularly meet 90% of the demand. A null hypothesis to test the observations is that average demand ($\mu_{demand}$) met is 90%, ie $H_0: \mu_{demand} = 90\%$. The p-value is the probability, if $H_0$ is true, of an observation or an observation more extreme; here more extreme is $\mu_{demand}$ more than 90%. The distribution here approximates to a normal distribution $N$(`r round(meanD, digits = 1)`, `r round(sdD, digits = 1)`) and using this the calculated p-value is `r round(p_value, digits=3)` which is above the critical value of 5% and therefore we cannot reject the null hypothesis. 
 
 *Successfully Meeting Demand - Fisher's Exact Test*
 
-In a previous section, looking at energy consumption, it appeared that occupancy was the bigger predictor of daily energy use. So it is interesting to see the relationship between successfully meeting demand (say, solar provides \> 75% of energy) and significant occupancy (say, occupied \> 50% of the day). I suspect that the generated solar energy does not meet the demands of a fully occupied house.
-
-For September, the true/false occurrence of meeting demand and of being occupied were determined and a contingency table prepared.
+In a previous section, looking at energy consumption, it appeared that occupancy was the bigger predictor of daily energy use. So it is interesting to see the relationship between successfully meeting demand (again, at \> 90%) and significant occupancy (say, occupied \> 50% of the day). For September, the true/false occurrence of meeting demand and of being occupied were determined and a contingency table prepared.
 
 ```{r}
 # Prepare a contingency table looking at meeting demand vs occupation
 
 # Determine true / false for each combination
-demand_met <- ((energy_df$Home_Total - energy_df$From_Grid) / energy_df$Home_Total) > 0.75
+demand_met <- ((energy_df$Home_Total - energy_df$From_Grid) / energy_df$Home_Total) >= 0.90
 occupied <- (energy_df$Occupied / 24) > 0.5
 demandT_occpT <- sum(demand_met & occupied)
 demandT_occpF <- sum(demand_met & !occupied)
@@ -404,11 +421,11 @@ demandF_occpT <- sum(!demand_met & occupied)
 demandF_occpF <- sum(!demand_met & !occupied)
 
 # Create matrix and display
-contingency_table <- matrix(c(demandT_occpT,demandT_occpF,demandF_occpT,demandF_occpF), 2, 2)
+contingency_table <- matrix(c(demandT_occpT,demandT_occpF,demandF_occpT,demandF_occpF), 2, 2, byrow=TRUE)
 dimnames(contingency_table) <- list(Demand_Met=c(TRUE,FALSE), Occupied=c(TRUE,FALSE))
 print(contingency_table)
 ```
-This shows that demand is met in an occupied house on only `r round(demandT_occpT)` days out of 30, about `r round((demandT_occpT/30)*100)`% of September; however, we need to determine if this is statistically significant. The null hypothesis to consider is $$H_0: p(demandmet|occupied) = p(demandmet|\overline{occupied})$$.
+The null hypothesis to consider is $$H_0: p(demandmet|occupied) = p(demandmet|\overline{occupied})$$
 
 The contingency table is used to perform a Fisher's exact test to determine the p-value which is the probability, if the null hypothesis is true, of obtaining the observation, or an observation more extreme. In this case more extreme is that demand is met less frequently, so a one-sided test is used.
 
@@ -418,7 +435,7 @@ result = fisher.test(contingency_table, alternative = "less")
 p_value_f = result$p.value
 ```
 
-The results of a one-sided Fisher's exact test gave a p-value of `r ifelse(p_value_f < 0.005, "< 0.005", round(p_value_f, 3))`, this is above the critical 5% value and so we cannot reject the null hypothesis; there is no evidence to suggest that the demand is not met when occupied. This does seem surprising given the visualisation.
+The results of the one-sided Fisher's exact test gave a p-value of `r ifelse(p_value_f < 0.005, "< 0.005", round(p_value_f, 3))`, this is above the critical 5% value and so we cannot reject the null hypothesis; there is no evidence to suggest that the demand is not met when occupied. This does seem surprising given the visualisation.
 
 \newpage
 
@@ -430,6 +447,10 @@ The results of a one-sided Fisher's exact test gave a p-value of `r ifelse(p_val
 - (conclusions are supported in the main body of the text)
 
 
+xxxxx
+-   Energy Consumption - What drives energy consumption?
+-   Solar Generation Effectiveness - How well does the installation meet sales promises?
+-   Solar Energy Sufficiency - How well does solar generation meet the energy demand?
 
 ### Energy Consumption
 
@@ -462,12 +483,6 @@ The results of a one-sided Fisher's exact test gave a p-value of `r ifelse(p_val
 
 ##?? Conclusion
 
-Test citations [@Crawley2014] and as @spiegel2012
 
 \newpage
-
-# Appendices
-
-### *?? Energy Consumption ....*
-
 # References
