@@ -264,18 +264,20 @@ abline(0,0)
 ```{r, fig.dim=c(6,4), fig.align='center', include=FALSE}
 # Compare the actual solar energy against the predicted energy based on  irradiance
 solar_predicted <- energy_df$Irrdnce/1000 * solar_panels_area * loss_factor
-#summary(energy_df[,c("Solar_Total", "Irrdnce", "Temp")])
-summary(energy_df$Solar_Total/1000)
-sum(energy_df$Solar_Total/1000)
-summary(solar_predicted)
-sum(solar_predicted)
+#summary(energy_df$Solar_Total/1000)
+#sum(energy_df$Solar_Total/1000)
+#summary(solar_predicted)
+#sum(solar_predicted)
+mean_shortfall <- mean(solar_predicted) - mean(energy_df$Solar_Total/1000)
+percent_shortfall <- (mean_shortfall / mean(solar_predicted)) * 100
+
 plot(energy_df$Solar_Total/1000 ~ energy_df$Date, type = "l", col = "blue")
 plot(solar_predicted ~ energy_df$Date, type = "l", col = "lightblue")
 plot(energy_df$Irrdnce/1000 ~ energy_df$Date, type = "l", col = "red")
 plot(energy_df$Temp ~ energy_df$Date, type = "l", col = "green")
 ```
 
-Using the formulae above and with the irradiance observations during September, the sales prediction for daily solar energy were calculated and compared with the actual energy generated. The means for the month are  `r format(mean(solar_predicted), digits=3)` kWh and `r format(mean(energy_df$Solar_Total/1000), digits=3)` respectively. The daily totals are shown in the plot below and this clearly shows that the predicted generation is higher than the actual, although the differences do vary.
+Using the formulae above and with the irradiance observations during September, the sales prediction for daily solar energy were calculated and compared with the actual energy generated. The means for the month are  `r format(mean(solar_predicted), digits=3)` kWh and `r format(mean(energy_df$Solar_Total/1000), digits=3)` respectively, this is an mean shortfall of approximately `r format(mean_shortfall, digits=2)` kWh per day, about `r format(percent_shortfall, digits=1)`%. The daily totals are shown in the plot below and this clearly shows that the predicted generation is higher than the actual, although the differences do vary.
 
 ```{r, fig.dim=c(8,5), fig.align='center', echo=FALSE}
 # Barplot of solar generation & solar predicted
@@ -395,15 +397,19 @@ sdD <- sd(demand_met_percent)
 
 To take into account battery storage, an alternative approximation of how well the solar generation meets the needs of the house's energy consumption is to look at how much usage is catered for without any import from the grid. Using this approximation, the plot below shows the distribution of the percentage of demand that is met daily by solar generation in September. Across the month, on average, `r round(meanD, digits = 0)`%  of the demand is met and the range is from `r round(min(demand_met_percent), digits = 0)`% up to `r round(max(demand_met_percent), digits = 0)`%. 
 
-??? Also, there are `r round(sum(demand_met_percent < 75))` days when under 75% of the demand is met.
-
 ```{r, fig.dim=c(8,4), fig.align='center', echo=FALSE}
 # The distribution of percentage demand met in September
 hist(demand_met_percent, main="Percentage Demand Met - Daily", xlab= "Percentage", ylab="Days Count - September", 
          col = 'lightblue', xlim=c(50,100))
-p_value <- pnorm(90, mean = meanD, sd = sdD, lower.tail = FALSE)
+threshold <- 90
+days_met <- sum(demand_met_percent >= 90)
+total_shortfall_percent <- (sum(energy_df$From_Grid) / sum(energy_df$Home_Total)) * 100
+
+p_value <- pnorm(threshold, mean = meanD, sd = sdD, lower.tail = FALSE)
 ```
-A reasonable target for solar generation is to regularly meet 90% of the demand. A null hypothesis to test the observations is that average demand ($\mu_{demand}$) met is 90%, ie $H_0: \mu_{demand} = 90\%$. The p-value is the probability, if $H_0$ is true, of an observation or an observation more extreme; here more extreme is $\mu_{demand}$ more than 90%. The distribution here approximates to a normal distribution $N$(`r round(meanD, digits = 1)`, `r round(sdD, digits = 1)`) and using this the calculated p-value is `r round(p_value, digits=3)` which is above the critical value of 5% and therefore we cannot reject the null hypothesis. 
+A reasonable target for solar generation is to regularly meet 90% of the demand. On this measure the demand is met on only `r round(days_met, digits = 1)` out of 30 days in September and frequent shortfalls mean that electricity needs to be imported regularly from the grid to a total of `r round(total_shortfall_percent, digits = 0)`% of the overall energy consumption for September.
+
+A null hypothesis to test the observations is that average demand ($\mu_{demand}$) met is 90%, ie $H_0: \mu_{demand} = 90\%$. The p-value is the probability, if $H_0$ is true, of an observation or an observation more extreme; here more extreme is $\mu_{demand}$ more than 90%. The distribution here approximates to a normal distribution $N$(`r round(meanD, digits = 1)`, `r round(sdD, digits = 1)`) and using this the calculated p-value is `r round(p_value, digits=3)` which is above the critical value of 5% and therefore we cannot reject the null hypothesis. 
 
 *Successfully Meeting Demand - Fisher's Exact Test*
 
@@ -435,54 +441,43 @@ result = fisher.test(contingency_table, alternative = "less")
 p_value_f = result$p.value
 ```
 
-The results of the one-sided Fisher's exact test gave a p-value of `r ifelse(p_value_f < 0.005, "< 0.005", round(p_value_f, 3))`, this is above the critical 5% value and so we cannot reject the null hypothesis; there is no evidence to suggest that the demand is not met when occupied. This does seem surprising given the visualisation.
+The results of the one-sided Fisher's exact test gave a p-value of `r ifelse(p_value_f < 0.005, "< 0.005", round(p_value_f, 3))`, this is above the critical 5% value and so we cannot reject the null hypothesis; there is no evidence to suggest that the demand is not met when occupied.
 
 \newpage
 
 # Conclusions
 
-- eg what conclusions were unexpected or surprising
-- what have you learned from the data
-- eg how has statistics helped you understand the data
-- (conclusions are supported in the main body of the text)
+To recap, the aim of the analysis was to consider the following questions:
 
-
-xxxxx
 -   Energy Consumption - What drives energy consumption?
 -   Solar Generation Effectiveness - How well does the installation meet sales promises?
 -   Solar Energy Sufficiency - How well does solar generation meet the energy demand?
 
 ### Energy Consumption
 
--   Analysis showed that energy consumption is strongly linked to a combination of temperature and occupancy
--   However the link with temperature only was surprisngly weak
-    -   The temperature in September was only in the range `r round(min(energy_df$Temp), digits = 0)` to `r round(max(energy_df$Temp), digits = 0)` with a mean of `r round(mean(energy_df$Temp), digits = 1)` and this is not very extreme.
-    -   Good insulation with the above may have reduced the impact, colder weather will have a bigger impact, the calcuated regression line suggesst this with an aenergy demand of nearl 30 kWh at freezing point
-    - Occupancy also not strong but similarly not big temperature demands, also good insulation and heating left at a constant level so just utilities such as washing and cooking and lighting, tv etc which is probably lower than the heating?
+Before commencing the analysis, it was expected that energy consumption would be driven by the temperature and also increase when the house is occupied. The analysis did confirm this but the relationships individually were not very strong, whereas combined they are a strong predictor of the electricity used. The slightly weak impact of occupancy is not too surprising as the nature of the heat pump and underfloor heating make it more efficient to maintain a constant internal temperature regardless of time of day or occupancy. As aresult, the variable impact of occupancy is primarly just from lower energy consuming utilities such as lighting and cooking. 
+
+However, the weaker than expected inverse relationship with temperature was surprising. A potential explanation is the relatively mild weather in September, the temperature was in the range `r round(min(energy_df$Temp), digits = 0)` to `r round(max(energy_df$Temp), digits = 0)` with a mean of `r round(mean(energy_df$Temp), digits = 1)` $^\circ$C and extremely good insulation may have further reduced the impact of these mild temperatures. However, once temperatures drop to freezing level then maintaining a larger difference in external vs internal temperature will require more energy. This may not may be a very linear relationship and as temperature drops the proportional increase in power consumption may become greater. This would change the regression fit line and possibly also make the correlation stronger. But only winter observations will allow this to be determined.
+
+Overall it is encouraging that the statistical analysis seems to have shown the effectiveness of the insulation in reducing the impact of the weather.
 
 ### Solar Generation Effectiveness
 
--   Analysis showed that the solar power generated is consistently less than that predicted during the month of September ... but not why? ... is it ineficciency or is it overforecast of irradiance?
--   ?? probably throughout the year but only have monthly
--   ?? but is this caused by inefficiency in the generation equipment or is it caused because the irradiance expereinced is less than that predicted? don't have annual irradiance and generation figures to determine this
+The cost-benefit of the entire installation was dictated by the predicted level of solar power generation and so the reduction in the cost of energy imported from the national grid. Unfortunately the analysis demonstrated that actual solar energy generated falls well short of that predicted, 
+
+The relationship between increased sunshine and power generated was unsurprisingly confirmed, however there was an interesting variability in the amount of power generated as the sunshine levels became high (and generated electricity became high). This could point to some operational variability somewhere within the system when higher levels of electricity are being generated. Some focused operational analysis is required to better understand the cause and impact of this, particularly in the summer when much higher electricity generation takes place.
+
+All angles of analysis supported the conclusion that the actual solar power generated falls well short of that predicted during the sales process. For example, meeting a conservative 75% of the predicted value should occur on 10 to 20 days per month but this was only achieved on 6 days in September. The full daily shortfall is approximately `r format(percent_shortfall, digits=1)`% on average. This is a very useful piece of information to have identified and fundamentaly reduces the cost-benefit of the installation; however, the cause is not clear. Given that the in-built inefficiencies of the system should be accounted for in the loss-factor used in the generation calculations, it seems likely that the irradiance estimates originally used are much too optimistic and do not account for local factors such as shading from trees. Instead of an averaged estimation of irradiance, obtaining a more detailed breakdown of the estimated irradiance and then analysing this directly against the local weather station observations could help pinpoint the cause (although local shading impact may still not be accounted for).
 
 ### Solar Energy Sufficiency
 
-- ?? looks like majority of demands are met
-- ?? but a surprising statistical result
+There is a reasonable level of variability across the month, but on average solar generated power meets `r round(meanD, digits = 0)`%  of the energy demand from the house and both angles of statistical analysis do not contradict the view that solar energy is sufficient to meet the energy demands of the house. The averaged figures are good but the spikes mean that frequent shortfalls need to met by importing electricity from the grid;  demand is met only on `r round(days_met, digits = 1)` out of 30 days in September and  `r round(total_shortfall_percent, digits = 0)`% of the overall energy consumption for September still needs to be imported from the grid. Although this is a disappointing insight to uncover, it does add weight to a current discussion about the benefits of increasing battery capacity in order to iron out peaks and troughs in demand and solar production.
 
-### ?????? further work
+### Overall Conclusions
 
-?? Increased battery will smooth out across days? forecast storage/impact .. but can't see the intra-day detail to better analyse
-?? Predict full year / annual generation using non September ?? monthly irradiance data: <https://re.jrc.ec.europa.eu/pvg_tools/en/#MR>
-?? box plots
+This analysis has been very helpful in better understanding the effectiveness and efficiency of the new installation and has revealed some unexpected insights On the plus side, it has demonstrated that the solar generated power has the capacity to meet the demands of the house and that in mild temperatures the impact of weather and occupancy are not a major factor in energy consumption by the house. Less positive, is the realisation that the amount of solar power generated falls well short of that promised during the sales process. It reduces the overall cost-benefit of the installation. 
 
-##?? Discussion
-
-*TO DO: Structure into two sections*
-
-##?? Conclusion
-
+However, the 'green' benefits of removing all oil-fueled power are demonstrated and the proposed installation of additional battery storage has a strong case. 
 
 \newpage
 # References
