@@ -2,7 +2,7 @@
 title: "Energy Usage Analysis"
 subtitle: "An Analysis of Solar Generation Effectiveness"
 author: "Student Number: 2710017"
-date: "28 November 2024"
+date: "4 December 2024"
 output:
   pdf_document: default
   html_document: default
@@ -30,9 +30,9 @@ options(digits = 4)
 
 ## Scope & Objectives
 
-About six years ago, I decided to remove my reliance on oil and to reduce my use of electricity imported from the National Grid. My aim was to try to reduce my energy costs and also to make a small contribution towards reducing the use of fossil fuels. So I obtained installation costs and received estimates of how much energy I could generate by using solar panels. The existing setup of oil powered central heating was replaced by the installation of a solar panel array, battery storage and ground source heat pump. I hoped to be able to only import from the grid when solar generation and storage failed to meet the demands of the house.
+About six years ago, I decided to remove my reliance on oil and to reduce my use of electricity imported from the National Grid. My aim was to try to reduce my energy costs and also to make a small contribution towards reducing the use of fossil fuels. So I obtained installation costs and received estimates of how much energy I could generate by using solar panels. The existing setup of oil powered central heating was replaced by the installation of a solar panel array, battery storage and ground source heat pump. I hoped to be able to only have to import from the grid when solar generation and storage failed to meet the demands of the house.
 
-The main objective of this anaysis is to see if the installation has met the predictions made during the sales process and to what extent I no longer have to rely on imported electricity, or, in other words, how effective the overall installation is. I used a sample of data for the month of September 2024 as a hopefully representative month (ie not the height of summer with peak solar generation and not winter with low solar generation and peak consumption).
+The main objective of this analysis is to see if the installation has met the predictions made during the sales process and to what extent I no longer have to rely on imported electricity, or, in other words, how effective the overall installation is. I used a sample of data for the month of September 2024 as a hopefully representative month (ie not the height of summer with peak solar generation and not winter with low solar generation and peak consumption).
 
 In the final report, R code and outputs have been shown to demonstrate working, however to reduce the size of the document this is suppressed if repeating previous workings. All coding details are included in the submitted .rmd file. The main references sources used were: [@Crawley2014], [@Spiegel.Schiller2012] and [@Hankin2024].
 
@@ -168,7 +168,7 @@ abline(regression_model, col="darkblue")
 
 The scatter plot above is overlaid with the calculated linear regression line of: energy = `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* occupancy. This linear regression calculation is used to see how strong the relationship is between a predictor variable (occupancy) and a response variable (energy consumption). The null hypothesis is that there is no relationship (no correlation) between energy consumption and occupancy and that the slope ($\beta$) of the line is zero, or: $$H_0: \beta = 0$$
 
-The p-value calculated for the regression model is the probability, if $H_0$ is true, of the observation or a an observation more extreme. Here more extreme is $\beta$ greater than 0. The calculated p-value for the regression fit above was `r format(p_value, digits=3)` with an adjusted R-squared of `r format(adj_r_squared, digits=2)`. The p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and occupancy are correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
+The p-value calculated for the regression model is the probability, if $H_0$ is true, of the observation or a an observation more extreme. Here more extreme is $\beta$ not equal to 0. The calculated p-value for the regression fit above was `r format(p_value, digits=3)` with an adjusted R-squared of `r format(adj_r_squared, digits=2)`. The p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and occupancy are correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
 
 Then looking at the relationship between energy demand and temperature (NB: same R Code so not printed to save space).
 
@@ -189,7 +189,7 @@ abline(regression_model, col="darkblue")
 #print(sprintf("p-value: %.4f, Adj R-Squared: %.3f", p_value, adj_r_squared))
 ```
 
-The scatter plot above is overlaid with the calculated linear regression line of: `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* temperature. In the same way as previously, the p-value was calculated to test a similar null hypothesis and determine if their is a correlation between energy consumption and temperature. This calculated p-value was `r format(p_value, digits=2)` with an adjusted R-squared of `r format(adj_r_squared, digits=2)`. Here the p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and temperature are inversely correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong.
+The scatter plot above is overlaid with the calculated linear regression line of: `r round(alpha, digits=2)` ($\alpha$) + `r round(beta, digits=2)` ($\beta$) \* temperature. In the same way as previously, the p-value was calculated to test a similar null hypothesis and determine if their is a correlation between energy consumption and temperature. This calculated p-value was `r format(p_value, digits=2)` with an adjusted R-squared of `r format(adj_r_squared, digits=2)`. Here the p-value is less than the 5% critical value and so we can reject $H_0$ and infer that energy and temperature are inversely correlated, however the relative low value of adjusted R-squared suggests that the correlation is not very strong. The regression line will become negative if temperature heads towards 30 $^\circ$C, so the linear regression was calcualted using log values. However, this did not significantly change the statistical results and so was not used to simplify interpreataion.
 
 Then a multi-linear regression was performed looking at the relationship between energy demand and temperature plus occupancy (NB: A three dimensional scatter plot was not attempted).
 
@@ -259,6 +259,7 @@ plot(fitted_points, residuals_points,
      pch=21, bg="lightblue", ylim=c(-7,7))
 abline(0,0)
 ```
+
 *Evaluate Effectiveness*
 
 ```{r, fig.dim=c(6,4), fig.align='center', include=FALSE}
@@ -277,9 +278,9 @@ plot(energy_df$Irrdnce/1000 ~ energy_df$Date, type = "l", col = "red")
 plot(energy_df$Temp ~ energy_df$Date, type = "l", col = "green")
 ```
 
-Using the formulae above and with the irradiance observations during September, the sales prediction for daily solar energy were calculated and compared with the actual energy generated. The means for the month are  `r format(mean(solar_predicted), digits=3)` kWh and `r format(mean(energy_df$Solar_Total/1000), digits=3)` respectively, this is an mean shortfall of approximately `r format(mean_shortfall, digits=2)` kWh per day, about `r format(percent_shortfall, digits=1)`%. The daily totals are shown in the plot below and this clearly shows that the predicted generation is higher than the actual, although the differences do vary.
+Using the formulae above and with the irradiance observations during September, the sales prediction for daily solar energy were calculated and compared with the actual energy generated. The means for the month are  `r format(mean(solar_predicted), digits=3)` kWh and `r format(mean(energy_df$Solar_Total/1000), digits=3)` respectively, this is a mean shortfall of approximately `r format(mean_shortfall, digits=2)` kWh per day, about `r format(percent_shortfall, digits=1)`%. The daily totals are shown in the plot below and this clearly shows that the predicted generation is higher than the actual, although the relative differences do vary.
 
-```{r, fig.dim=c(8,5), fig.align='center', echo=FALSE}
+```{r, fig.dim=c(7,5), fig.align='center', echo=FALSE}
 # Barplot of solar generation & solar predicted
 barplot_result <- barplot(energy_df$Solar_Total/1000, names.arg = format(energy_df$Date, "%d %b"), 
         cex.name=0.9, las=2, cex.axis=0.7, main="Daily Solar Generation vs Predicted", 
@@ -344,9 +345,9 @@ The null hypothesis to test the observations is that 'success' is achieved on on
 
 *Visual Examination*
 
-The energy demands of the house were examined to see how well these were met by solar generated electricity and how much any shortfalls needed to covered by imported electricity. The first stacked bar plot below shows the daily total energy consumed and how much is provided by: solar generation; the battery; or imported electricity. The second plot shows the daily total solar energy generated and where this is distributed to.
+The energy demands of the house were examined to see how well these were met by solar generated electricity and how often any shortfalls needed to be covered by imported electricity. The first stacked bar plot below shows the daily total energy consumed and how much is provided by: solar generation; the battery; or imported electricity. The second plot shows the daily total solar energy generated and where this is distributed to.
 
-```{r, fig.dim=c(8,5), fig.align='center'}
+```{r, fig.dim=c(7,5), fig.align='center'}
 # Stacked bar plot of daily energy consumption and the three sources of energy
 # Transpose to matrix to use for stacked bar plot
 usage <- t(energy_df)[c("From_Solar", "From_Pwall", "From_Grid"),]
@@ -361,7 +362,7 @@ legend('top', legend=c("From Solar", "From Battery", "From Grid"), title="Source
 
 ```
 
-```{r, fig.dim=c(8,5), fig.align='center', echo=FALSE}
+```{r, fig.dim=c(7,5), fig.align='center', echo=FALSE}
 # Stacked bar plot of daily solar generation and the three ares this is distributed to
 
 # Transpose to matrix to use for stacked bar plot
@@ -383,9 +384,9 @@ solar_powerwall_percent <- mean(c(energy_df$To_Pwall / energy_df$Solar_Total)) *
 solar_grid_percent <- mean(c(energy_df$To_Grid / energy_df$Solar_Total)) * 100
 ```
 
-The first bar plot appears to clearly show that the generated solar energy is not sufficient to meet the total consumption needs, on average it only meets `r round(average_solar_percent, digits = 0)`% of the daily demand. However, this is misleading as generated solar energy is often first stored in the battery for later use (it is sometime also exported to the gird if the battery becomes full). The second bar plot shows this more clearly, with solar energy distributed to the home, the battery or exported to the grid on average: `r round(solar_home_percent, digits = 0)`%, `r round(solar_powerwall_percent, digits = 0)`%, and `r round(solar_grid_percent, digits = 0)`% respectively.
+The first bar plot appears to clearly show that the generated solar energy is not sufficient to meet the total consumption needs, on average it only meets `r round(average_solar_percent, digits = 0)`% of the daily demand. However, this is misleading as generated solar energy is often first stored in the battery for later use (it is sometime also exported to the grid if the battery becomes full). The second bar plot shows this more clearly, with solar energy distributed to the home, the battery or exported to the grid on average: `r round(solar_home_percent, digits = 0)`%, `r round(solar_powerwall_percent, digits = 0)`%, and `r round(solar_grid_percent, digits = 0)`% respectively.
 
-*Successfully Meeting Demand - Binomial Probability*
+*Successfully Meeting Demand - Probability*
 
 ```{r}
 # Calculate an alternative approximation for solar generation
@@ -397,7 +398,7 @@ sdD <- sd(demand_met_percent)
 
 To take into account battery storage, an alternative approximation of how well the solar generation meets the needs of the house's energy consumption is to look at how much usage is catered for without any import from the grid. Using this approximation, the plot below shows the distribution of the percentage of demand that is met daily by solar generation in September. Across the month, on average, `r round(meanD, digits = 0)`%  of the demand is met and the range is from `r round(min(demand_met_percent), digits = 0)`% up to `r round(max(demand_met_percent), digits = 0)`%. 
 
-```{r, fig.dim=c(8,4), fig.align='center', echo=FALSE}
+```{r, fig.dim=c(6,4), fig.align='center', echo=FALSE}
 # The distribution of percentage demand met in September
 hist(demand_met_percent, main="Percentage Demand Met - Daily", xlab= "Percentage", ylab="Days Count - September", 
          col = 'lightblue', xlim=c(50,100))
@@ -409,7 +410,7 @@ p_value <- pnorm(threshold, mean = meanD, sd = sdD, lower.tail = FALSE)
 ```
 A reasonable target for solar generation is to regularly meet 90% of the demand. On this measure the demand is met on only `r round(days_met, digits = 1)` out of 30 days in September and frequent shortfalls mean that electricity needs to be imported regularly from the grid to a total of `r round(total_shortfall_percent, digits = 0)`% of the overall energy consumption for September.
 
-A null hypothesis to test the observations is that average demand ($\mu_{demand}$) met is 90%, ie $H_0: \mu_{demand} = 90\%$. The p-value is the probability, if $H_0$ is true, of an observation or an observation more extreme; here more extreme is $\mu_{demand}$ more than 90%. The distribution here approximates to a normal distribution $N$(`r round(meanD, digits = 1)`, `r round(sdD, digits = 1)`) and using this the calculated p-value is `r round(p_value, digits=3)` which is above the critical value of 5% and therefore we cannot reject the null hypothesis. 
+A null hypothesis to test the observations is that average demand ($\mu_{demand}$) met is 90%, ie $H_0: \mu_{demand} = 90\%$. The p-value is the probability, if $H_0$ is true, of the an observation or an observation more extreme; here more extreme is $\mu_{demand}$ more than 90%. The distribution here approximates to a normal distribution $N$(`r round(meanD, digits = 1)`, `r round(sdD, digits = 1)`) and using this the calculated p-value is `r round(p_value, digits=3)` which is above the critical value of 5% and therefore we cannot reject the null hypothesis. 
 
 *Successfully Meeting Demand - Fisher's Exact Test*
 
@@ -455,7 +456,7 @@ To recap, the aim of the analysis was to consider the following questions:
 
 ### Energy Consumption
 
-Before commencing the analysis, it was expected that energy consumption would be driven by the temperature and also increase when the house is occupied. The analysis did confirm this but the relationships individually were not very strong, whereas combined they are a strong predictor of the electricity used. The slightly weak impact of occupancy is not too surprising as the nature of the heat pump and underfloor heating make it more efficient to maintain a constant internal temperature regardless of time of day or occupancy. As aresult, the variable impact of occupancy is primarly just from lower energy consuming utilities such as lighting and cooking. 
+Before commencing the analysis, it was expected that energy consumption would be driven by the temperature and also increase when the house is occupied. The analysis did confirm this but the relationships individually were not very strong, whereas combined they are a strong predictor of the electricity used. The slightly weak impact of occupancy is not too surprising as the nature of the heat pump and underfloor heating make it more efficient to maintain a constant internal temperature regardless of time of day or occupancy. As a result, the variable impact of occupancy is primarly just from lower energy consuming utilities such as lighting and cooking. 
 
 However, the weaker than expected inverse relationship with temperature was surprising. A potential explanation is the relatively mild weather in September, the temperature was in the range `r round(min(energy_df$Temp), digits = 0)` to `r round(max(energy_df$Temp), digits = 0)` with a mean of `r round(mean(energy_df$Temp), digits = 1)` $^\circ$C and extremely good insulation may have further reduced the impact of these mild temperatures. However, once temperatures drop to freezing level then maintaining a larger difference in external vs internal temperature will require more energy. This may not may be a very linear relationship and as temperature drops the proportional increase in power consumption may become greater. This would change the regression fit line and possibly also make the correlation stronger. But only winter observations will allow this to be determined.
 
